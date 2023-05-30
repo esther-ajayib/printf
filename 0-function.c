@@ -1,6 +1,17 @@
 #include <stdarg.h>
 #include <unistd.h>
-#include "main.h"
+
+/**
+ * _putchar - Writes a character to stdout
+ * @c: The character to write
+ *
+ * Return: On success, returns the number of characters written.
+ * On error, returns -1.
+ */
+int _putchar(char c)
+{
+	return (write(1, &c, 1));
+}
 
 /**
  * _printf - Prints output according to a format.
@@ -49,28 +60,6 @@ int _printf(const char *format, ...)
 					_putchar(s[i]);
 					count++;
 					i++;
-				}
-			}
-			else if (*format == 'd' || *format == 'i')
-			{
-				int num = va_arg(args, int);
-				int div = 1;
-
-				if (num < 0)
-				{
-					_putchar('-');
-					count++;
-					num = -num;
-				}
-
-				while (num / div > 9)
-					div *= 10;
-
-				while (div != 0)
-				{
-					_putchar(num / div % 10 + '0');
-					count++;
-					div /= 10;
 				}
 			}
 		}
