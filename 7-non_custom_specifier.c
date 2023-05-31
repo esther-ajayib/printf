@@ -132,14 +132,6 @@ int _printf(const char *format, ...)
 				is_upper = (*format == 'X');
 				i = 0;
 
-				if (*format == '#')
-				{
-					_putchar('0');
-					_putchar(*format);
-					count += 2;
-					format++;
-				}
-
 				if (num == 0)
 				{
 					buffer[i++] = '0';
@@ -218,6 +210,5 @@ int _printf(const char *format, ...)
 	}
 
 	va_end(args);
-
 	return (count);
 }
