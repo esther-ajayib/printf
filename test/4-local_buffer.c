@@ -21,6 +21,35 @@ int _puts(char *str)
 
 	return (count);
 }
+int print_number(unsigned int n, int base, int uppercase)
+{
+	char buffer[1024];
+	int index = 0;
+	int count = 0;
+
+	if (n == 0)
+	{
+		buffer[index++] = '0';
+		count++;
+	}
+	else
+	{
+		while (n != 0)
+		{
+			int rem = n % base;
+			buffer[index++] = (rem < 10) ? rem + '0' : rem - 10 + (uppercase ? 'A' : 'a');
+			n /= base;
+			count++;
+		}
+	}
+
+	while (index > 0)
+	{
+		_putchar(buffer[--index]);
+	}
+
+	return (count);
+}
 
 /**
  * _printf - Custom implementation of printf function

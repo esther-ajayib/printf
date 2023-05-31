@@ -19,8 +19,17 @@ int _puts(char *str)
 		str++;
 	}
 
-	return (count);
+	return count;
 }
+
+/**
+ * print_number - Prints a number to stdout
+ * @n: The number to be printed
+ * @base: The base for conversion
+ * @uppercase: Flag indicating whether to use uppercase letters for hex (1) or not (0)
+ *
+ * Return: The number of characters printed.
+ */
 int print_number(unsigned int n, int base, int uppercase)
 {
 	char buffer[1024];
@@ -48,7 +57,7 @@ int print_number(unsigned int n, int base, int uppercase)
 		_putchar(buffer[--index]);
 	}
 
-	return (count);
+	return count;
 }
 
 /**
@@ -121,6 +130,36 @@ int _printf(const char *format, ...)
 					unb = va_arg(args, unsigned int);
 					count += print_number(unb, 16, 1);
 					break;
+				case 'S':
+					str = va_arg(args, char *);
+					if (str == NULL)
+						str = "(null)";
+					while (*str)
+					{
+						if (*str < 32 || *str >= 127)
+						{
+							if (buf_index + 4 >= 1024)
+							{
+								count += write(1, buffer, buf_index);
+								buf_index = 0;
+							}
+							buffer[buf_index++] = '\\';
+							buffer[buf_index++] = 'x';
+							buffer[buf_index++] = (*str >> 4) + '0';
+							buffer[buf_index++] = (*str & 0x0F) + ((*str & 0x0F) < 10 ? '0' : 'A' - 10);
+						}
+						else
+						{
+							if (buf_index >= 1024)
+							{
+								count += write(1, buffer, buf_index);
+								buf_index = 0;
+							}
+							buffer[buf_index++] = *str;
+						}
+						str++;
+					}
+					break;
 				case '%':
 					if (buf_index >= 1024)
 					{
@@ -156,6 +195,5 @@ int _printf(const char *format, ...)
 
 	va_end(args);
 
-	return count;
+	return (count);
 }
-
