@@ -2,30 +2,7 @@
 #include <unistd.h>
 #include "main.h"
 #include <ctype.h>
-#include <string.h>
-
-/**
- * print_plus_space_flags - Prints the '+' and ' ' flags if needed
- *
- * @flags: The flags string
- * Return: The number of characters printed
- */
-int print_plus_space_flags(const char *flags)
-{
-	int count = 0;
-
-	while (*flags)
-	{
-		if (*flags == '+')
-			count += _putchar('+');
-		else if (*flags == ' ')
-			count += _putchar(' ');
-
-		flags++;
-	}
-
-	return (count);
-}
+#include <stdbool.h>
 
 /**
  * _printf - Prints output according to a format.
@@ -42,6 +19,9 @@ int _printf(const char *format, ...)
 	int i, j, is_upper;
 	char hex_digits[] = "0123456789abcdef";
 	char buffer[1024];
+	int plus_flag = 0;
+	int space_flag = 0;
+	int hash_flag = 0;
 
 	va_start(args, format);
 
@@ -62,6 +42,18 @@ int _printf(const char *format, ...)
 			{
 				_putchar('%');
 				count++;
+			}
+			else if (*format == '+')
+			{
+				plus_flag = 1;
+			}
+			else if (*format == ' ')
+			{
+				space_flag = 1;
+			}
+			else if (*format == '#')
+			{
+				hash_flag = 1;
 			}
 			else if (*format == 'c')
 			{
@@ -84,14 +76,25 @@ int _printf(const char *format, ...)
 			}
 			else if (*format == 'd' || *format == 'i')
 			{
-				int num = va_arg(args, int);
-				int div = 1;
+				num = va_arg(args, int);
+                                div = 1;
 
-				if (num < 0)
+				if (plus_flag && num != 0)
 				{
+					_putchar('+');
+					count++;
+				}
+				else if (space_flag && num != 0)
+				{
+					_putchar(' ');
+					count++;
+				}
+
+				if (num == 0)
+				{
+					num = -num;
 					_putchar('-');
 					count++;
-					num = -num;
 				}
 
 				while (num / div > 9)
@@ -152,7 +155,14 @@ int _printf(const char *format, ...)
  			}
  			else if (*format == 'x' || *format == 'X')
 			{
-				num = va_arg(args, unsigned int);
+				if (hash_flag)
+				{
+					_putchar('0');
+					_putchar(*format);
+					count += 2;
+				}
+
+				num = va_arg(args, unsigned long int);
 				is_upper = (*format == 'X');
 				i = 0;
 
