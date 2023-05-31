@@ -19,17 +19,8 @@ int _puts(char *str)
 		str++;
 	}
 
-	return count;
+	return (count);
 }
-
-/**
- * print_number - Prints a number to stdout
- * @n: The number to be printed
- * @base: The base for conversion
- * @uppercase: Flag indicating whether to use uppercase letters for hex (1) or not (0)
- *
- * Return: The number of characters printed.
- */
 int print_number(unsigned int n, int base, int uppercase)
 {
 	char buffer[1024];
@@ -57,7 +48,7 @@ int print_number(unsigned int n, int base, int uppercase)
 		_putchar(buffer[--index]);
 	}
 
-	return count;
+	return (count);
 }
 
 /**
@@ -160,11 +151,11 @@ int _printf(const char *format, ...)
 		}
 		format++;
 	}
-
 	if (buf_index > 0)
 		count += write(1, buffer, buf_index);
 
 	va_end(args);
 
-	return (count);
+	return count;
 }
+

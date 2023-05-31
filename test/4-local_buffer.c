@@ -1,166 +1,132 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include "main.h"
-#include <ctype.h>
 
 /**
- * _printf - Prints output according to a format.
- * @format: The format string
+ * _puts - Prints a string to stdout
+ * @str: The string to be printed
  *
- * Return: The number of characters printed (excluding the null byte).
+ * Return: The number of characters printed.
+ */
+int _puts(char *str)
+{
+	int count = 0;
+
+	while (*str)
+	{
+		_putchar(*str);
+		count++;
+		str++;
+	}
+
+	return (count);
+}
+
+/**
+ * _printf - Custom implementation of printf function
+ * @format: Format string
+ *
+ * Return: The number of characters printed (excluding the null byte used to end output to strings)
  */
 int _printf(const char *format, ...)
 {
 	va_list args;
 	int count = 0;
-	unsigned int num, div, rem;
-	int binary[32];
-	int i, j, is_upper;
-
-	char hex_digits[] = "0123456789abcdef";
 	char buffer[1024];
+	int buf_index = 0;
+	char ch;
+	char *str;
+	int num;
+	unsigned int unb;
 
 	va_start(args, format);
 
 	while (*format)
 	{
-		if (*format != '%')
+		if (*format == '%')
 		{
-			_putchar(*format);
-			count++;
+			format++;
+			switch (*format)
+			{
+				case 'c':
+					ch = va_arg(args, int);
+					if (buf_index >= 1024)
+					{
+						count += write(1, buffer, buf_index);
+						buf_index = 0;
+					}
+					buffer[buf_index++] = ch;
+					break;
+				case 's':
+					str = va_arg(args, char *);
+					if (str == NULL)
+						str = "(null)";
+					while (*str)
+					{
+						if (buf_index >= 1024)
+						{
+							count += write(1, buffer, buf_index);
+							buf_index = 0;
+						}
+						buffer[buf_index++] = *str++;
+					}
+					break;
+				case 'd':
+				case 'i':
+					num = va_arg(args, int);
+					count += print_number((unsigned int)num, 10, 0);
+					break;
+				case 'u':
+					unb = va_arg(args, unsigned int);
+					count += print_number(unb, 10, 0);
+					break;
+				case 'o':
+					unb = va_arg(args, unsigned int);
+					count += print_number(unb, 8, 0);
+					break;
+				case 'x':
+					unb = va_arg(args, unsigned int);
+					count += print_number(unb, 16, 0);
+					break;
+				case 'X':
+					unb = va_arg(args, unsigned int);
+					count += print_number(unb, 16, 1);
+					break;
+				case '%':
+					if (buf_index >= 1024)
+					{
+						count += write(1, buffer, buf_index);
+						buf_index = 0;
+					}
+					buffer[buf_index++] = '%';
+					break;
+				default:
+					if (buf_index >= 1024)
+					{
+						count += write(1, buffer, buf_index);
+						buf_index = 0;
+					}
+					buffer[buf_index++] = '%';
+					buffer[buf_index++] = *format;
+					break;
+			}
 		}
 		else
 		{
-			format++;
-			if (*format == '\0')
-				break;
-
-			if (*format == '%')
+			if (buf_index >= 1024)
 			{
-				_putchar('%');
-				count++;
+				count += write(1, buffer, buf_index);
+				buf_index = 0;
 			}
-			else if (*format == 'c')
-			{
-				int c = va_arg(args, int);
-				_putchar(c);
-				count++;
-			}
-			else if (*format == 's')
-			{
-				char *s = va_arg(args, char *);
-				i = 0;
-
-				while (s && s[i])
-				{
-					_putchar(s[i]);
-					count++;
-					i++;
-				}
-
-			}
-			else if (*format == 'd' || *format == 'i')
-			{
-				int num = va_arg(args, int);
-				int div = 1;
-
-				if (num < 0)
-				{
-					_putchar('-');
-					count++;
-					num = -num;
-				}
-
-				while (num / div > 9)
-					div *= 10;
-
-				while (div != 0)
-				{
-					_putchar(num / div % 10 + '0');
-					count++;
-					div /= 10;
-				}
-			}
-			else if (*format == 'b')
-			{
-				num = va_arg(args, unsigned int);
-
-				for (i = 0; num > 0; i++)
-				{
-					binary[i] = num % 2;
-					num /= 2;
-				}
-
-				for (j = i - 1; j >= 0; j--)
-				{
-					_putchar(binary[j] + '0');
-					count++;
-				}
-			}
-			else if (*format == 'u')
-			{
-				num = va_arg(args, unsigned int);
-				div = 1;
-				
-				while (num / div > 9)
-					div *= 10;
-
-				while (div != 0)
-				{
-					_putchar(num / div % 10 + '0');
-					count++;
-					div /= 10;
-				}
-			}
-			else if (*format == 'o')
-			{
-				num = va_arg(args, unsigned int);
-				div = 1;
-
-				while (num / div > 7)
-					div *= 8;
-
-				while (div != 0)
-				{
-					_putchar(num / div % 8 + '0');
-					count++;
-					div /= 8;
-				}
- 			}
- 			else if (*format == 'x' || *format == 'X')
-			{
-				num = va_arg(args, unsigned int);
-
-				is_upper = (*format == 'X');
-
-				i = 0;
-
-				if (num == 0)
-				{
-					buffer[i++] = '0';
-				}
-				else
-				{
-					while (num != 0)
-					{
-						rem = num % 16;
-						buffer[i++] = hex_digits[rem];
-						num /= 16;
-					}
-
-					while (i > 0)
-					{
-						i--;
-						_putchar(is_upper ? (char)toupper(buffer[i]) : buffer[i]);
-						count++;
-					}
-				}
-			}
+			buffer[buf_index++] = *format;
 		}
-
 		format++;
 	}
+	if (buf_index > 0)
+		count += write(1, buffer, buf_index);
 
 	va_end(args);
-	return (count);
+
+	return count;
 }
+
