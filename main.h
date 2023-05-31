@@ -6,7 +6,7 @@
 
 int _putchar(char c);
 int _printf(const char *format, ...);
-int print_number(va_list args);
+int print_number(int n);
 int print_binary(unsigned int num);
 
 #endif /* MAIN_H */

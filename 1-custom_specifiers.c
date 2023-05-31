@@ -23,10 +23,41 @@ int _puts(char *str)
 }
 
 /**
- * _printf - Custom implementation of printf function
- * @format: format string
+ * print_number - Prints a number
+ * @n: The number to be printed
  *
- * Return: number of characters printed
+ * Return: The number of digits printed.
+ */
+int print_number(int n)
+{
+	int divisor = 1;
+	int count = 0;
+
+	if (n < 0)
+	{
+		_putchar('-');
+		count++;
+		n = -n;
+	}
+
+	while (n / divisor > 9)
+		divisor *= 10;
+
+	while (divisor != 0)
+	{
+		_putchar((n / divisor) % 10 + '0');
+		divisor /= 10;
+		count++;
+	}
+
+	return count;
+}
+
+/**
+ * _printf - Custom implementation of printf function
+ * @format: Format string
+ *
+ * Return: The number of characters printed (excluding the null byte used to end output to strings)
  */
 int _printf(const char *format, ...)
 {
@@ -34,6 +65,7 @@ int _printf(const char *format, ...)
 	int count = 0;
 	char ch;
 	char *str;
+	int num;
 
 	va_start(args, format);
 
@@ -53,6 +85,11 @@ int _printf(const char *format, ...)
 					if (str == NULL)
 						str = "(null)";
 					count += _puts(str);
+					break;
+				case 'd':
+				case 'i':
+					num = va_arg(args, int);
+					count += print_number(num);
 					break;
 				case '%':
 					count += _putchar('%');
@@ -75,4 +112,3 @@ int _printf(const char *format, ...)
 
 	return count;
 }
-
